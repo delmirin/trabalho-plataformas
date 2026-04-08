@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/Assets/Editor/BootLoaderEditor.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Assets/Editor/BootLoaderEditor.cs" />
+              <option name="updatedContent" value="using UnityEditor;&#10;using UnityEngine;&#10;using UnityEngine.SceneManagement;&#10;&#10;[InitializeOnLoad]&#10;public class BootLoaderEditor&#10;{&#10;    static BootLoaderEditor()&#10;    {&#10;        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;&#10;    }&#10;&#10;    static void OnPlayModeStateChanged(PlayModeStateChange change)&#10;    {&#10;        if (change == PlayModeStateChange.EnteredPlayMode)&#10;        {&#10;            // Store the current scene name&#10;            string sceneName = SceneManager.GetActiveScene().name;&#10;            PlayerPrefs.SetString(&quot;CurrentScene&quot;, sceneName);&#10;            PlayerPrefs.Save();&#10;        }&#10;    }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Assets/scripts.cs/AudiooPlayer.cs">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Assets/scripts.cs/AudiooPlayer.cs" />
+              <option name="originalContent" value="using UnityEngine;&#10;&#10;public class AudioPlayer : MonoBehaviour&#10;{&#10;    public AudioCollection myAudioCollection;&#10;    // Start is called once before the first execution of Update after the MonoBehaviour is created&#10;    void Start()&#10;    {&#10;        AudioManager.Instance.PlaySound(myAudioCollection.AudioClipCollection[0]);&#10;    }&#10;}" />
+              <option name="updatedContent" value="using UnityEngine;&#10;using UnityEngine.SceneManagement;&#10;using System.Collections;&#10;&#10;namespace scripts.cs&#10;{&#10;    public class AudioPlayer : MonoBehaviour&#10;    {&#10;        public AudioCollection myAudioCollection;&#10;        // Start is called once before the first execution of Update after the MonoBehaviour is created&#10;        void Start()&#10;        {&#10;            DontDestroyOnLoad(gameObject);&#10;            if (myAudioCollection != null &amp;&amp; myAudioCollection.AudioClipCollection.Count &gt; 0)&#10;            {&#10;                AudioManager.Instance.PlaySound(myAudioCollection.AudioClipCollection[0]);&#10;            }&#10;            // Load the open scene additively&#10;            string sceneToLoad = PlayerPrefs.GetString(&quot;CurrentScene&quot;, &quot;SampleScene&quot;);&#10;            if (sceneToLoad == &quot;boot&quot;)&#10;            {&#10;                sceneToLoad = &quot;SampleScene&quot;;&#10;            }&#10;            SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);&#10;            // Unload the boot scene&#10;            StartCoroutine(UnloadBoot());&#10;        }&#10;&#10;        private IEnumerator UnloadBoot()&#10;        {&#10;            yield return new WaitForSeconds(0.1f); // Wait a bit for the scene to load&#10;            SceneManager.UnloadSceneAsync(&quot;boot&quot;);&#10;        }&#10;    }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
