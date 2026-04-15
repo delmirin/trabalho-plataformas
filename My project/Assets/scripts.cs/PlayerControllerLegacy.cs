@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,52 +15,65 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
     private float xRotation = 0f;
 
+    // INPUT SYSTEM
+    private Vector2 moveInput;
+    private Vector2 mouseInput;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
-        // Travar rotação física para o boneco não cair de lado
         rb.freezeRotation = true;
 
-        // Esconder o cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Registra o PlayerInput no GameManager
+        GameManager.instance.ConfigurarInput(GetComponent<PlayerInput>());
     }
 
     void Update()
     {
         // --- ROTAÇÃO (MOUSE) ---
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = mouseInput.x * mouseSensitivity * Time.deltaTime;
+        float mouseY = mouseInput.y * mouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
+    }
 
-        // --- PULO ---
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+    void FixedUpdate()
+    {
+        // --- MOVIMENTO ---
+        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
+        rb.MovePosition(rb.position + move * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    // --- INPUT SYSTEM METHODS ---
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        mouseInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
         }
     }
 
-    void FixedUpdate()
-    {
-        // --- MOVIMENTO (TECLADO) ---
-        // Usamos FixedUpdate para movimentação com Rigidbody para evitar trepidações
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        rb.MovePosition(rb.position + move * moveSpeed * Time.fixedDeltaTime);
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
-        // Verifica se tocou no chão para resetar o pulo
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;

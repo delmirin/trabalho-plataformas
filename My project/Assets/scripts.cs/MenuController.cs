@@ -1,7 +1,5 @@
 using UnityEngine;
 
-uusing UnityEngine;
-
 public class MenuController : MonoBehaviour
 {
     public void IniciarJogo()
